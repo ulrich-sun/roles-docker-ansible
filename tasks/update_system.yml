@@ -1,0 +1,41 @@
+---
+#CentOS Distribution
+- name: Check if OS = centos
+  fail:
+    msg: You are not able to update this System, IT's not centos Distribution
+  when: ansible_distribution == 'CentOS'
+
+- name: Update CentOS OS
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - check-update
+    - epel-release
+    - yum-utils
+    - git
+    - device-mapper-persitent-data
+    - python3
+    - python3-pip
+    - wget
+  when: ansible_distribution == 'CentOS'
+
+#Ubuntu Distribution
+- name: Check if OS = Ubuntu
+  fail:
+    msg: You are not able to update this System, IT's not centos Distribution
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Update Ubuntu OS
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - update
+    - ca-certificates 
+    - curl
+    - wget
+    - python3
+    - python3-pip
+    - git
+  when: ansible_distribution == 'Ubuntu'

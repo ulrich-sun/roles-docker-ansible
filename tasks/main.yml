@@ -1,0 +1,14 @@
+---
+# tasks file for roles-docker-ansible
+include_tasks: update_system.yml
+include_tasks: setup_docker.yml
+
+- name: main start
+  become: true
+  tasks:
+    - name: add system user to dockergroup
+      user: 
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes 
+      notify: restart docker

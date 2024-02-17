@@ -1,0 +1,68 @@
+---
+#Ubuntu
+- name: Add docker repositories
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: 'a+r'
+  when: ansible_ditribution == 'Ubuntu'
+
+- name: configure gpg
+  command: 'sudo install -m 0755 -d /etc/apt/keyrings'
+  when: ansible_ditribution == 'Ubuntu'
+
+- name: Install docker engine
+  apt:
+    name: '{{ item }}'
+    state: present
+  loop:
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io 
+    - docker-buildx-plugin 
+    - docker-compose-plugin
+  when: ansible_ditribution == 'Ubuntu'
+  notify: restart docker
+
+#CentOS
+- name: Add docker repositories
+  yum_repository:
+    name: docker
+    description: docker
+    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
+    enabled: yes
+  when: ansible_ditribution == 'Ubuntu'
+
+- name: Add Docker GPG Key
+  rpm_key:
+    key: https://download.docker.com
+  when: ansible_ditribution == 'Ubuntu'
+
+- name: Install docker engine
+  apt:
+    name: '{{ item }}'
+    state: present
+  loop:
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io 
+    - docker-buildx-plugin 
+    - docker-compose-plugin
+  when: ansible_ditribution == 'Ubuntu'
+  notify: restart docker
+
+# For all 
+- name: Install docker compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 0755
+- name: Enable and start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+- name: Docker python
+  pip:
+    name: docker-py
+    executable: pip3
